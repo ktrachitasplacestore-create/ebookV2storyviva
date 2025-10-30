@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ebook: StoryVIVA Inmobiliario</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter (moderna y legible) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Estilo base con la fuente Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* --- Estilos para las Tarjetas Flip --- */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 26rem; /* 416px - Altura aumentada para más texto */
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 0.75rem; /* 12px */
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 0.75rem; /* 12px */
+            overflow: hidden;
+        }
+
+        /* Lado frontal (con imagen) */
+        .flip-card-front {
+            background-color: #1f2937; /* bg-gray-800 */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Lado trasero (con texto) */
+        .flip-card-back {
+            background-color: #1d4ed8; /* bg-blue-700 */
+            color: white;
+            transform: rotateY(180deg);
+            padding: 1.5rem; /* p-6 */
+            overflow-y: auto; /* Scroll si el texto es muy largo */
+        }
+        
+        /* Ocultar pantallas de capítulo por defecto */
+        .chapter-screen {
+            display: none;
+        }
+
+        /* Mostrar la pantalla activa */
+        .chapter-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased">
+
+    <!-- ===== HEADER Y NAVEGACIÓN ===== -->
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Título -->
+                <div class="flex-shrink-0">
+                    <span class="text-xl font-bold text-blue-400">StoryVIVA Inmobiliario</span>
+                </div>
+
+                <!-- Menú Desktop -->
+                <div class="hidden md:flex flex-wrap items-center space-x-4">
+                    <a href="#" onclick="showChapter('inicio'); return false;" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Inicio</a>
+                    
+                    <!-- INICIO: Menú Desplegable de Capítulos para Desktop -->
+                    <div class="relative">
+                        <button id="desktop-menu-button" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center">
+                            Capítulos
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        
+                        <!-- Contenido del Menú Desplegable -->
+                        <div id="desktop-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg z-50 py-1">
+                            <a href="#" onclick="showChapter('intro'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Introducción</a>
+                            <a href="#" onclick="showChapter('cap1'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 1</a>
+                            <a href="#" onclick="showChapter('cap2'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 2</a>
+                            <a href="#" onclick="showChapter('cap3'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 3</a>
+                            <a href="#" onclick="showChapter('cap4'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 4</a>
+                            <a href="#" onclick="showChapter('cap5'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 5</a>
+                            <a href="#" onclick="showChapter('cap6'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 6</a>
+                            <a href="#" onclick="showChapter('cap7'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 7</a>
+                            <a href="#" onclick="showChapter('cap8'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 8</a>
+                            <a href="#" onclick="showChapter('cap9'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Capítulo 9</a>
+                            <a href="#" onclick="showChapter('cap10'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Cap 10 (Ejercicios)</a>
+                            <a href="#" onclick="showChapter('conclusion'); return false;" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Conclusión</a>
+                        </div>
+                    </div>
+                    <!-- FIN: Menú Desplegable -->
+                </div>
+
+                <!-- Botón Menú Móvil -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white p-2 rounded-md">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Menú Desplegable Móvil -->
+            <div id="mobile-menu" class="md:hidden hidden pb-3">
+                <a href="#" onclick="showChapter('inicio'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Inicio</a>
+                <a href="#" onclick="showChapter('intro'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Introducción</a>
+                <a href="#" onclick="showChapter('cap1'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 1</a>
+                <a href="#" onclick="showChapter('cap2'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 2</a>
+                <a href="#" onclick="showChapter('cap3'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 3</a>
+                <a href="#" onclick="showChapter('cap4'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 4</a>
+                <a href="#" onclick="showChapter('cap5'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 5</a>
+                <a href="#" onclick="showChapter('cap6'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 6</a>
+                <a href="#" onclick="showChapter('cap7'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 7</a>
+                <a href="#" onclick="showChapter('cap8'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 8</a>
+                <a href="#" onclick="showChapter('cap9'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Capítulo 9</a>
+                <a href="#" onclick="showChapter('cap10'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Cap 10 (Ejercicios)</a>
+                <a href="#" onclick="showChapter('conclusion'); return false;" class="nav-link-mobile block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-base font-medium">Conclusión</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- --- Pantalla de Inicio --- -->
+        <div id="inicio" class="chapter-screen active">
+            <!-- Portada con imagen de fondo -->
+            <div class="text-center bg-cover bg-center rounded-lg shadow-xl overflow-hidden" 
+                 style="background-image: url('https://res.cloudinary.com/dufxtzcpl/image/upload/v1761860381/cbaaaf3f-a9cd-4fa9-a159-6e834a120f21_wqyqiy.webp');">
+                <!-- Capa de superposición para legibilidad -->
+                <div class="bg-gray-900 bg-opacity-70 p-12">
+                    <h1 class="text-4xl font-bold text-white mb-4">Bienvenido al Ebook Interactivo</h1>
+                    <p class="text-2xl text-blue-300 mb-6">🏡 StoryVIVA Inmobiliario</p>
+                    <p class="text-xl text-gray-200 mb-8">Piensa con historia, sé el héroe o convierte a tu cliente en el héroe.</p>
+                    <p class="text-gray-300 max-w-2xl mx-auto">
+                        Navega por los capítulos usando el menú superior. Haz clic en las tarjetas para revelar la información.
+                    </p>
+                    <button onclick="showChapter('intro'); return false;" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105">
+                        Comenzar Introducción
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Introducción --- -->
+        <div id="intro" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Introducción</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761860381/cbaaaf3f-a9cd-4fa9-a159-6e834a120f21_wqyqiy.webp" 
+                                 alt="Conexión" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Conexi%C3%B3n'">
+                            <h3 class="text-2xl font-bold p-4">La Herramienta Estratégica</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Más Allá de los Metros Cuadrados</h4>
+                            <p>En el mundo inmobiliario actual, donde todos compiten por captar la atención, el Storytelling es una herramienta estratégica y emocionalmente poderosa. Los agentes que dominan el arte de contar historias logran conectar con el corazón de sus clientes.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761860381/cbaaaf3f-a9cd-4fa9-a159-6e834a120f21_wqyqiy.webp" 
+                                 alt="StoryVIVA" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=StoryVIVA'">
+                            <h3 class="text-2xl font-bold p-4">StoryVIVA Inmobiliario</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">La Metodología</h4>
+                            <p>El Círculo Inmobiliario Secreto nació para enseñar a los agentes latinos a dominar las herramientas que los diferencian. Una de ellas es el StoryVIVA Inmobiliario, una metodología para pensar con historia, sentir con propósito y vender con emoción.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761861821/592ac3d9-2fbe-432f-93db-4e46aae7cae9_sw2czf.webp" 
+                                 alt="Guía" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Tu+Gu%C3%ADa'">
+                            <h3 class="text-2xl font-bold p-4">Tu Guía Práctica</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Paso a Paso</h4>
+                            <p>Este ebook está diseñado para que comprendas, paso a paso, cómo aplicar el storytelling a tu carrera inmobiliaria y convertir cada interacción en una historia que inspire confianza y acción.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 1 --- -->
+        <div id="cap1" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 1: El Storytelling Inmobiliario — ¿Qué problema resuelve?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761864056/descarga_3_cbavsm.webp" 
+                                 alt="Comunicación Fría" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Comunicaci%C3%B3n+Fr%C3%ADa'">
+                            <h3 class="text-2xl font-bold p-4">La Comunicación Fría y Técnica</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Problema del Mercado</h4>
+                            <p>Durante años, el mercado ha sido dominado por una comunicación fría: “3 habitaciones, 2 baños, 120 metros cuadrados” como si compraran ladrillos y no emociones. Miles de agentes ofrecen lo mismo y compiten por precio.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761864057/descarga_4_egifm6.webp" 
+                                 alt="Vacío Emocional" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=El+Vac%C3%ADo+Emocional'">
+                            <h3 class="text-2xl font-bold p-4">Resolver el Vacío Emocional</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">La Solución del Storytelling</h4>
+                            <p>El Storytelling Inmobiliario resuelve este vacío. Nos enseña a dejar de hablar de características y comenzar a narrar experiencias humanas. Las historias activan la empatía y la memoria. La gente no recuerda datos, recuerda cómo la hiciste sentir.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761864728/descarga_5_sxkqlb.webp" 
+                                 alt="Desafíos" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Desaf%C3%ADos'">
+                            <h3 class="text-2xl font-bold p-4">Los 3 Desafíos del Agente</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Verdadero Problema</h4>
+                            <p>1. <strong>Desconfianza del cliente:</strong> Sienten que los agentes solo buscan comisión.<br>2. <strong>Falta de diferenciación:</strong> Todos los agentes parecen iguales.<br>3. <strong>Comunicación aburrida:</strong> Posts sin alma, sin historia, sin emoción.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761864728/descarga_6_gjqihc.webp" 
+                                 alt="Inspirar" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Inspirar'">
+                            <h3 class="text-2xl font-bold p-4">De Vender a Inspirar</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">La Raíz de la Solución</h4>
+                            <p>Cuando cuentas historias, dejas de vender y comienzas a inspirar. Una historia bien contada convierte la duda en confianza, la curiosidad en interés, y el interés en decisión.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 5 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761864949/descarga_7_hyqcdd.webp" 
+                                 alt="Ejemplo" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Ejemplo+Real'">
+                            <h3 class="text-2xl font-bold p-4">Ejemplo Real (StoryVIVA)</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Antes vs. Después</h4>
+                            <p><strong>Antes:</strong> “Casa de 3 habitaciones en venta, zona residencial segura, L.2,500,000”<br><br><strong>Después (con StoryVIVA):</strong> “Cuando María vio la casa por primera vez, no pensó en los metros cuadrados. Pensó en la risa de sus hijos corriendo por el patio... Hoy María ya no paga alquiler, sino hipoteca en su propio hogar.”<br><br><strong>Resultado:</strong> Tres citas en un solo día.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 6 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://res.cloudinary.com/dufxtzcpl/image/upload/v1761864950/descarga_8_hueknl.webp" 
+                                 alt="Conclusión" class="w-full h-3/5 object-cover"
+                                 onerror="this.src='https://placehold.co/600x400/1f2937/9ca3af?text=Conclusi%C3%B3n'">
+                            <h3 class="text-2xl font-bold p-4">Conclusión del Capítulo 1</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Una Necesidad, No una Moda</h4>
+                            <p>El storytelling inmobiliario es el puente entre la mente racional y el corazón de tu cliente. En un mercado donde todos dicen lo mismo, quien logre contar historias auténticas será quien gane la atención, la confianza y, finalmente, la venta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- --- Pantalla Capítulo 2 --- -->
+        <div id="cap2" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 2: La Utilidad del Storytelling Inmobiliario</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Atraer" alt="Atraer" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">El Poder de Atraer</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">No Empuja, Atrae</h4>
+                            <p>Imagina poder hablar con tus clientes sin que sientan que los estás vendiendo. Ese es el verdadero poder del storytelling. En el sector inmobiliario, es la herramienta más eficaz para construir confianza, recordación y lealtad.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Narrador" alt="Narrador" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">De Vendedor a Narrador de Sueños</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Cambio de Rol</h4>
+                            <p>Un agente tradicional describe propiedades. Un agente StoryVIVA narra posibilidades de vida. Pasas de ser un intermediario a ser un conector emocional. Dejas de competir por precio y conviertes interacciones en relaciones.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=D%C3%ADa+a+D%C3%ADa" alt="Día a Día" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">La Utilidad Práctica en tu Día a Día</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Aplicación Real</h4>
+                            <p><strong>Redes Sociales:</strong> "Hoy entregué llaves a una familia que soñó con este día durante años."<br><strong>Recorridos:</strong> "Aquí, los domingos, las familias suelen reunirse..."<br><strong>Negociaciones:</strong> "Sé que esta casa no es solo una compra, es el inicio de un nuevo capítulo."<br><strong>Cierres:</strong> Convertir la entrega de llaves en una ceremonia.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Emoci%C3%B3n" alt="Emoción" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">La Utilidad Emocional: Lo Invisible</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Lo que Realmente Vende</h4>
+                            <p>Detrás de cada compra hay una emoción escondida: seguridad, orgullo, estabilidad. El storytelling te permite hablar con esa emoción.<br><br><strong>Antes:</strong> “Casa con buena ubicación y acabados modernos.”<br><strong>Después:</strong> “Un lugar donde volverás a casa con la tranquilidad de saber que tu familia está segura y feliz.”<br><br>El segundo mensaje no informa, transforma.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 3 --- -->
+        <div id="cap3" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 3: Contexto Profesional del Storytelling Inmobiliario</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Contexto" alt="Contexto" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">El Contexto Doble</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Más que Marketing</h4>
+                            <p>El storytelling es una herramienta estratégica que actúa hacia adentro y hacia afuera de la profesión. Se trata de acompañar a las personas en una de las decisiones más importantes de su vida.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Interno" alt="Interno" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">1. Contexto Interno: Fortalecer la Identidad</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Propósito del Agente</h4>
+                            <p>Detrás de cada agente hay una historia personal. El storytelling interno sirve para reconectar con esa esencia y construir una marca personal coherente y creíble. En equipos, une, inspira y alinea visiones. En el Círculo Inmobiliario Secreto, practicamos esto para fortalecer la cultura del grupo.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Externo" alt="Externo" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">2. Contexto Externo: Conectar con Clientes</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Puente Emocional</h4>
+                            <p>Hacia afuera, es el puente entre la marca personal y las emociones del cliente. Un cliente quiere escuchar historias que le den esperanza y seguridad.<br><br><strong>Antes:</strong> “Apartamento de 2 habitaciones en venta...”<br><strong>Después:</strong> “A Laura le tomó un año decidirse a dejar el alquiler. Hoy, cada vez que enciende la luz de su nuevo apartamento, recuerda que las mejores decisiones empiezan con un paso valiente.”<br><br>El público deja de verlo como un vendedor y empieza a verlo como un asesor de confianza.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 4 --- -->
+        <div id="cap4" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 4: Adaptando el Storytelling al Nicho Inmobiliario</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Sue%C3%B1os" alt="Sueños" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">Un Mercado de Sueños</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">No Vendemos Casas</h4>
+                            <p>Nadie compra una casa por las paredes; la compra porque imagina su vida dentro de ella. No vendemos casas, vendemos experiencias de vida. En el método StoryVIVA, identificamos tres tipos de héroes.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=H%C3%A9roe+1" alt="Héroe 1" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">1. El Agente (El Héroe de Origen)</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Tu Propio Viaje</h4>
+                            <p>Es la historia del profesional que supera el miedo y la frustración. Humaniza tu marca. Cuando el público conoce tu "por qué", confía en ti.<br><br><strong>Ejemplo:</strong> “Recuerdo mi primera venta... supe que estaba en el lugar correcto. Desde entonces, no vendo casas, acompaño historias.”</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=H%C3%A9roe+2" alt="Héroe 2" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">2. El Cliente (El Héroe de Transformación)</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Corazón del Storytelling</h4>
+                            <p>El cliente es el héroe y el agente es el guía. Refuerza la confianza del público porque demuestra resultados reales.<br><br><strong>Ejemplo:</strong> “María soñaba con dejar el alquiler... Hoy, cada vez que abre la puerta de su casa, recuerda que un sueño pequeño puede crecer con la guía adecuada.”</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=H%C3%A9roe+3" alt="Héroe 3" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">3. La Comunidad (El Héroe Colectivo)</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Transformación del Entorno</h4>
+                            <p>Algunas historias celebran la transformación de un entorno completo: barrios que renacen o proyectos que revitalizan zonas.<br><br><strong>Ejemplo:</strong> “Hace cinco años, nadie creía en este vecindario. Hoy, cada casa cuenta una historia de esfuerzo y esperanza. Lo que antes era abandono, ahora es comunidad.”</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- --- Pantalla Capítulo 5 --- -->
+        <div id="cap5" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 5: El ABC del StoryVIVA Inmobiliario</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=A" alt="A" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">A — Atención</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Captura o Desapareces</h4>
+                            <p>El cliente decide en 3 segundos. Capta la atención desde la emoción.<br><br><strong>Antes:</strong> “Casa en venta de 3 habitaciones.”<br><strong>Después:</strong> “Cuando Ana cruzó la puerta por primera vez, supo que era su hogar.”<br><br>El cliente no se detiene porque quiere comprar, sino porque quiere sentir. Tu tarea es encender esa chispa.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=B" alt="B" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">B — Búsqueda</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">La Historia Detrás del Deseo</h4>
+                            <p>Toda historia gira en torno a una búsqueda (externa o interna). No se trata de qué quiere comprar, sino *por qué* lo quiere.<br><br><strong>Ejemplos:</strong><br>• Una madre soltera que busca seguridad.<br>• Un joven profesional que quiere independencia.<br><br>Cuando el agente describe la búsqueda, el cliente piensa: “Esa soy yo.”</la>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=C" alt="C" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">C — Cambio</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Alma de la Historia</h4>
+                            <p>Toda historia necesita una transformación visible. Sin cambio, no hay historia.<br><br><strong>Cambio del Cliente:</strong> Pasa de la duda a la decisión, del miedo a la confianza. “María no creía que podría comprar, hasta que vio su nombre en la escritura.”<br><br><strong>Cambio del Agente:</strong> Pasa de vendedor a guía. “Dejé de hablar de precios y comencé a hablar de sueños.”</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 6 --- -->
+        <div id="cap6" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 6: Tipologías del StoryVIVA Inmobiliario</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Tipo+1" alt="Tipo 1" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">1. Historia de Origen</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Nacimiento del Propósito</h4>
+                            <p>Habla del camino del agente, sus inicios, miedos y transformaciones. Construye confianza y conexión humana. Muestra tu evolución.<br><br><strong>Ejemplo:</strong> "Vendí mi primera casa sin imaginar que estaba entregando un sueño. Ese día entendí que mi trabajo no era vender propiedades..."</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Tipo+2" alt="Tipo 2" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">2. Historia de Cliente</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Héroe Transformado</h4>
+                            <p>El protagonista es tu cliente. Muestra cómo logró superar un obstáculo o cumplir su sueño gracias a tu acompañamiento. Valida tu trabajo.<br><br><strong>Ejemplo:</strong> "María soñaba con dejar de alquilar. Tres meses después, abría la puerta de su propio hogar... ‘Gracias por ayudarnos a creer’."</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Tipo+3" alt="Tipo 3" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">3. Historia de Comunidad</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Héroe Colectivo</h4>
+                            <p>Cada vecindario o desarrollo guarda una historia de transformación. Hablan de progreso, esperanza y pertenencia. Te posiciona como parte del cambio.<br><br><strong>Ejemplo:</strong> "Donde antes había silencio y abandono, hoy se escuchan risas y bicicletas. Este barrio no solo cambió de imagen, cambió de alma."</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Tipo+4" alt="Tipo 4" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">4. Historia Aspiracional</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">El Héroe del Deseo</h4>
+                            <p>Conecta con el sueño del cliente antes de que decida comprar. El protagonista es el estilo de vida que anhela. Pinta con palabras la vida que podría vivir.<br><br><strong>Ejemplo:</strong> "Imagina despertar con vista al lago y el aroma del café recién hecho. No es solo una casa, es la calma que has estado buscando."</G>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 7 --- -->
+        <div id="cap7" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 7: Desarrollo de la Narración</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Tarjetas para las 7 etapas -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+1" alt="Etapa 1" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">1. La Búsqueda</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">El Deseo que Inicia</h4><p>Toda historia comienza con un deseo (del cliente o del agente). "Su búsqueda no era por metros cuadrados, era por libertad."</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+2" alt="Etapa 2" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">2. El Personaje</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">Darle Rostro al Héroe</h4><p>El público debe identificarse. No se trata de quién es, sino de cómo siente y cómo cambia.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+3" alt="Etapa 3" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">3. El Antagonista</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">El Obstáculo</h4><p>Sin conflicto, no hay historia. Puede ser el miedo, los trámites, o la desconfianza. El conflicto humaniza.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+4" alt="Etapa 4" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">4. Las Peripecias</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">Los Giros</h4><p>Son los momentos que avanzan la trama: la visita, la negociación, el suspenso. Dan dinamismo y tensión.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+5" alt="Etapa 5" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">5. Crisis y Resolución</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">Máxima Emoción</h4><p>El momento de incertidumbre donde todo parece perderse, seguido de la resolución que da alivio y satisfacción.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+6" alt="Etapa 6" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">6. Reactivación</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">La Historia Sigue Viva</h4><p>Las historias reales no terminan. Se reactivan cuando el cliente comparte su experiencia. Es la clave de la viralidad emocional.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Etapa+7" alt="Etapa 7" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">7. Vínculo con la Realidad</h3></div>
+                        <div class="flip-card-back"><h4 class="text-xl font-bold mb-3">Autenticidad</h4><p>El storytelling solo es eficaz si es creíble. Las historias perfectas no conectan. Muestra vulnerabilidad y aprendizaje.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 8 --- -->
+        <div id="cap8" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 8: La Historia del Héroe — Versión Brunson Inmobiliaria</h2>
+            <p class="text-center text-gray-400 mb-8 max-w-3xl mx-auto">El modelo narrativo de Russell Brunson adaptado al mundo inmobiliario. Cada cliente y agente vive su propia travesía hacia el cambio.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- 8 Fases -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+1" alt="Fase 1" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">1. Historia de Fondo</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">El comienzo. El contexto, miedos y circunstancias iniciales. "Cuando inicié en bienes raíces, no tenía contactos, ni experiencia..." Muestra vulnerabilidad.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+2" alt="Fase 2" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">2. El Deseo</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">El motor que impulsa. "Quería vender mi primera casa, pero más que una comisión, deseaba sentir que era capaz de cambiar una vida."</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+3" alt="Fase 3" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">3. El Problema</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">El muro que detiene. El conflicto. "Mostré veinte casas y nadie compraba. Empecé a pensar que no era lo mío." La gente conecta con el esfuerzo.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+4" alt="Fase 4" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">4. La Epifanía</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">El momento de revelación. "Entonces entendí que las personas no compran casas; compran emociones... debía dejar de vender propiedades y empezar a contar historias."</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+5" alt="Fase 5" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">5. El Plan</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">La hoja de ruta tras la revelación. "Empecé a compartir historias reales en mis publicaciones... comencé a vender con propósito."</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+6" alt="Fase 6" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">6. El Conflicto</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">La última prueba. "Durante meses nadie reaccionó a mis nuevas historias. Dudé... Pero algo dentro de mí decía que debía seguir." Muestra resiliencia.</p></div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+7" alt="Fase 7" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">7. La Solución</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">El triunfo. La validación del esfuerzo. "Un día, una clienta me dijo: ‘Vi tu historia y me sentí reflejada. Quiero que seas tú...’ Ese mensaje cambió mi carrera."</D>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Fase+8" alt="Fase 8" class="w-full h-2/5 object-cover"><h3 class="text-xl font-bold p-3">8. La Transformación</h3></div>
+                        <div class="flip-card-back"><p class="p-4 text-sm">El legado. El protagonista ya no es el mismo. "Hoy no busco vender más, busco transformar vidas a través de lo que hago."</g>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 9 --- -->
+        <div id="cap9" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 9: Los Mejores Consejos para Dominar el Storytelling</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Consejo+1" alt="Consejo 1" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">1. Habla Menos de Ti, Más de Ellos</h3></div>
+                        <div class="flip-card-back"><p class="p-4">El protagonista es tu cliente. <br><strong>No digas:</strong> “Vendí 10 casas este mes.”<br><strong>Di:</strong> “Ayudé a 10 familias a comenzar un nuevo capítulo.”<br>Cambia presumir resultados por compartir propósito.</p></div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Consejo+2" alt="Consejo 2" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">2. No Vendas Propiedades, Cuenta Futuros</h3></div>
+                        <div class="flip-card-back"><p class="p-4">Muestra la vida que puede suceder en la casa. <br><strong>No digas:</strong> “Excelente iluminación natural.”<br><strong>Di:</strong> “Cada mañana, el sol entra por la ventana como si te diera los buenos días.”<br>Si el cliente lo imagina, ya diste el primer paso.</p></div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Consejo+3" alt="Consejo 3" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">3. Sé Auténtico, No Perfecto</h3></div>
+                        <div class="flip-card-back"><p class="p-4">Las historias reales, con errores, conectan más. No temas mostrarte humano.<br>“Ese día olvidé las llaves... y mientras esperábamos, el cliente me contó por qué esa casa era importante. Fue el cierre más significativo.”<br>La gente confía en quien se muestra tal cual es.</p></div>
+                    </div>
+                </div>
+                <!-- Tarjeta 4 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Consejo+4" alt="Consejo 4" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">4. Escucha Antes de Contar</h3></div>
+                        <div class="flip-card-back"><p class="p-4">El buen narrador no habla primero, escucha primero. Cada cliente te ofrece su propio guion: sus miedos, sueños y anhelos. Tu tarea no es escribir sobre ellos, sino junto a ellos. Cuando escuchas con empatía, las palabras correctas llegan solas.</p></div>
+                    </div>
+                </div>
+                <!-- Tarjeta 5 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Consejo+5" alt="Consejo 5" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">5. Cuida los Detalles</h3></div>
+                        <div class="flip-card-back"><p class="p-4">Los grandes cierres nacen de pequeños gestos: recordar el nombre del perro, felicitarlo en su cumpleaños, una nota al entregar las llaves. Esos detalles se convierten en micro-historias que el cliente jamás olvida.<br>“Ese momento vale más que cualquier comisión.”</p></div>
+                    </div>
+                </div>
+                <!-- Tarjeta 6 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"><img src="https://placehold.co/600x400/1f2937/9ca3af?text=Consejo+6" alt="Consejo 6" class="w-full h-3/5 object-cover"><h3 class="text-2xl font-bold p-4">6. Mide el Impacto Emocional</h3></div>
+                        <div class="flip-card-back"><p class="p-4">No todo se mide en likes. Si alguien te dice: “Me hiciste pensar” o “Sentí que hablabas de mí”, esa historia ya cumplió su misión. El objetivo no es viralizar, es humanizar.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Capítulo 10 (Ejercicios) --- -->
+        <div id="cap10" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Capítulo 10: Laboratorio StoryVIVA Inmobiliario</h2>
+            <p class="text-center text-gray-400 mb-8 max-w-3xl mx-auto">Ejercicios y Retos para Pasar de la Teoría a la Práctica. Este es tu espacio para practicar, equivocarte, aprender y brillar.</p>
+            
+            <div class="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-xl">
+                <form>
+                    <!-- Nivel 1 -->
+                    <h3 class="text-2xl font-bold text-blue-300 mb-4">Nivel 1 — Iniciación: Descubre tu historia</h3>
+                    <div class="mb-6">
+                        <label for="ejercicio1" class="block text-lg font-medium text-gray-200 mb-2">Ejercicio 1: Mi primer cierre emocional</label>
+                        <p class="text-gray-400 text-sm mb-3">Piensa en tu primera venta o una que te marcó. ¿Qué sentías? ¿Qué sintió el cliente? ¿Qué aprendiste?</p>
+                        <textarea id="ejercicio1" rows="4" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Escribe tu historia en 100 palabras..."></textarea>
+                    </div>
+                    <div class="mb-6">
+                        <label for="ejercicio2" class="block text-lg font-medium text-gray-200 mb-2">Ejercicio 2: Tu "Por Qué"</label>
+                        <p class="text-gray-400 text-sm mb-3">Completa la frase: “Yo no vendo casas, yo ayudo a las personas a _________.”</p>
+                        <textarea id="ejercicio2" rows="3" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Escribe tu 'por qué' aquí..."></textarea>
+                    </div>
+
+                    <!-- Nivel 2 -->
+                    <h3 class="text-2xl font-bold text-blue-300 mt-10 mb-4">Nivel 2 — Conexión: Narra emociones</h3>
+                    <div class="mb-6">
+                        <label for="ejercicio3" class="block text-lg font-medium text-gray-200 mb-2">Ejercicio 3: Del dato a la historia</label>
+                        <p class="text-gray-400 text-sm mb-3">Toma un anuncio viejo. <strong>Antes:</strong> “Casa de 3 habitaciones, 2 baños, patio amplio.” <strong>Escribe el Después:</strong></p>
+                        <textarea id="ejercicio3" rows="4" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Después: 'Un espacio donde tus hijos podrán correr libres...'"></textarea>
+                    </div>
+                     <div class="mb-6">
+                        <label for="ejercicio4" class="block text-lg font-medium text-gray-200 mb-2">Ejercicio 4: El cliente héroe</label>
+                        <p class="text-gray-400 text-sm mb-3">Escoge un cliente. ¿Qué soñaba? ¿Qué obstáculo enfrentó? ¿Cómo lo ayudaste? ¿Qué cambió?</p>
+                        <textarea id="ejercicio4" rows="4" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Escribe la historia de tu cliente..."></textarea>
+                    </div>
+
+                    <!-- Nivel 3 -->
+                    <h3 class="text-2xl font-bold text-blue-300 mt-10 mb-4">Nivel 3 — Maestría: Inspira y lidera</h3>
+                    <div class="mb-6">
+                        <label for="ejercicio5" class="block text-lg font-medium text-gray-200 mb-2">Ejercicio 5: El héroe colectivo</label>
+                        <p class="text-gray-400 text-sm mb-3">Piensa en un proyecto o vecindario. Describe cómo ha cambiado. ¿Qué historias colectivas surgieron?</p>
+                        <textarea id="ejercicio5" rows="4" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="La historia de la comunidad..."></textarea>
+                    </div>
+                     <div class="mb-6">
+                        <label for="ejercicio6" class="block text-lg font-medium text-gray-200 mb-2">Ejercicio 6: Tu legado narrativo</label>
+                        <p class="text-gray-400 text-sm mb-3">Imagina que han pasado 10 años. ¿Qué te gustaría que tus clientes dijeran de ti? "Quiero que me recuerden como el agente que..."</p>
+                        <textarea id="ejercicio6" rows="3" class="w-full p-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Escribe tu manifiesto personal..."></textarea>
+                    </div>
+
+                    <div class="text-right mt-8">
+                        <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-all">
+                            Guardar Borrador (Demo)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- --- Pantalla Conclusión --- -->
+        <div id="conclusion" class="chapter-screen">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Conclusión e Inspiración Final</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjeta 1 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Lenguaje" alt="Lenguaje" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">Un Lenguaje, No una Técnica</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">La Gramática de la Comunicación</h4>
+                            <p>El storytelling inmobiliario no es una técnica de moda, es un lenguaje. Es la forma en que los agentes trascienden la transacción para entrar en la transformación. Cada historia con propósito genera confianza y crea vínculos duraderos.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 2 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Agente+Narrador" alt="Agente Narrador" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">La Nueva Era del Agente Narrador</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Constructor de Confianza</h4>
+                            <p>En esta nueva era, el agente que sabe contar historias es un constructor de confianza. Su herramienta más poderosa es la empatía y la humanidad. Ya no se trata de mostrar propiedades, sino de mostrar posibilidades.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta 3 -->
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Tu+Historia" alt="Tu Historia" class="w-full h-3/5 object-cover">
+                            <h3 class="text-2xl font-bold p-4">Tu Próxima Historia Comienza Ahora</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4 class="text-xl font-bold mb-3">Usa Tu Voz</h4>
+                            <p>Si has llegado hasta aquí, ya diste el primer paso: comprender el poder de tu voz. El siguiente paso es usarla. No esperes el momento perfecto; empieza hoy.<br><br>Cierra este libro con una reflexión:<br><strong>“¿Qué historia quiero contar mañana?”</strong><br><br>Porque la historia más poderosa aún no está escrita… está esperando por ti.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="text-center p-6 mt-12 border-t border-gray-700 text-gray-500">
+        Inspirado en el Círculo Inmobiliario Secreto y el método StoryVIVA.
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // --- Lógica de Navegación de Pantallas ---
+        function showChapter(chapterId) {
+            document.querySelectorAll('.chapter-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            const targetScreen = document.getElementById(chapterId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+            
+            // Cierra ambos menús (móvil y desktop) al seleccionar un capítulo
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+            const desktopMenu = document.getElementById('desktop-menu');
+            if (!desktopMenu.classList.contains('hidden')) {
+                desktopMenu.classList.add('hidden');
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        // --- Lógica del Menú Móvil ---
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Lógica del Menú Desktop ---
+        const desktopMenuButton = document.getElementById('desktop-menu-button');
+        const desktopMenu = document.getElementById('desktop-menu');
+
+        desktopMenuButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Evita que el click se propague al 'window'
+            desktopMenu.classList.toggle('hidden');
+        });
+
+        // Cierra el menú de desktop si se hace clic fuera de él
+        window.addEventListener('click', (event) => {
+            if (!desktopMenu.classList.contains('hidden') && !desktopMenuButton.contains(event.target)) {
+                desktopMenu.classList.add('hidden');
+            }
+        });
+        
+        // --- Lógica de Tarjetas Flip (en el HTML) ---
+        // onclick="this.classList.toggle('flipped')"
+
+        // Mostrar la pantalla de inicio al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            showChapter('inicio');
+        });
+    </script>
+
+</body>
+</html>
